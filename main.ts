@@ -24,18 +24,11 @@ radio.onReceivedString(function (receivedString) {
         } else if (receivedString == "CRAON") {
             LIGHTSTATE = 2
             CRAMODE = true
+            cramode()
         } else if (receivedString == "CRAOFF") {
             CRAMODE = false
             LIGHTSTATE = 0
             pins.digitalWritePin(DigitalPin.P0, 0)
-        } else {
-            basic.showLeds(`
-                . . . . .
-                . # . # .
-                . . # . .
-                . . . # .
-                # . . . #
-                `)
         }
     }
 })
@@ -50,8 +43,6 @@ input.onButtonPressed(Button.B, function () {
                 . # # # .
                 . # # # .
                 `)
-            basic.pause(100)
-            basic.clearScreen()
         } else if (Mode == "LIGHT") {
             Mode = "SOUND"
             basic.showLeds(`
@@ -80,18 +71,21 @@ input.onButtonPressed(Button.B, function () {
 function cramode () {
     music._playDefaultBackground(music.builtInPlayableMelody(Melodies.Wawawawaa), music.PlaybackMode.LoopingInBackground)
     while (CRAMODE == true) {
-        pins.digitalWritePin(DigitalPin.P0, 1)
-        basic.showIcon(IconNames.Heart)
-        basic.showIcon(IconNames.Angry)
-        basic.showIcon(IconNames.StickFigure)
-        basic.pause(1000)
-        pins.digitalWritePin(DigitalPin.P0, 0)
-        basic.showIcon(IconNames.Skull)
-        basic.showIcon(IconNames.Umbrella)
-        basic.showIcon(IconNames.Silly)
+        if (CRAMODE == true) {
+            pins.digitalWritePin(DigitalPin.P0, 1)
+            basic.showIcon(IconNames.Heart)
+            basic.showIcon(IconNames.Angry)
+            basic.showIcon(IconNames.StickFigure)
+            basic.pause(1000)
+            pins.digitalWritePin(DigitalPin.P0, 0)
+            basic.showIcon(IconNames.Skull)
+            basic.showIcon(IconNames.Umbrella)
+            basic.showIcon(IconNames.Silly)
+        }
     }
     music.stopAllSounds()
 }
+let light_level = 0
 let CRAMODE = false
 let LIGHTSTATE = 0
 let CONNECTED = false
@@ -106,11 +100,13 @@ LIGHTSTATE = 0
 CRAMODE = false
 radio.setGroup(RADIOGROUP)
 basic.forever(function () {
+    light_level = Math.map(input.lightLevel(), 0, 255, 1023, 0)
     if (CRAMODE == false) {
         if (Mode == "OFF") {
         	
         } else if (Mode == "LIGHT") {
-        	
+            LIGHTSTATE = 1
+            pins.analogWritePin(AnalogPin.P0, light_level)
         } else if (Mode == "SOUND") {
             if (input.soundLevel() > 180) {
                 if (LIGHTSTATE == 0) {
@@ -120,6 +116,7 @@ basic.forever(function () {
                     LIGHTSTATE = 0
                     pins.digitalWritePin(DigitalPin.P0, 0)
                 }
+                basic.pause(1000)
             }
         }
     }
