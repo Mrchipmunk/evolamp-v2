@@ -24,6 +24,8 @@ radio.onReceivedString(function (receivedString) {
         } else if (receivedString == "CRAON") {
             LIGHTSTATE = 2
             CRAMODE = true
+        } else if (false) {
+        	
         } else {
         	
         }
@@ -53,9 +55,8 @@ pins.setAudioPinEnabled(false)
 let RADIOGROUP = 1
 CONNECTED = false
 LIGHTSTATE = 0
-CRAMODE = true
+CRAMODE = false
 radio.setGroup(RADIOGROUP)
-cramode()
 basic.forever(function () {
 	
 })
