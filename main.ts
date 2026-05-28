@@ -24,10 +24,18 @@ radio.onReceivedString(function (receivedString) {
         } else if (receivedString == "CRAON") {
             LIGHTSTATE = 2
             CRAMODE = true
-        } else if (false) {
-        	
+        } else if (receivedString == "CRAOFF") {
+            CRAMODE = false
+            LIGHTSTATE = 0
+            pins.digitalWritePin(DigitalPin.P0, 0)
         } else {
-        	
+            basic.showLeds(`
+                . . . . .
+                . . . . .
+                . . . . .
+                . . . . .
+                . . . . .
+                `)
         }
     }
 })
@@ -36,7 +44,7 @@ function cramode () {
     while (CRAMODE == true) {
         pins.digitalWritePin(DigitalPin.P0, 1)
         basic.showIcon(IconNames.Heart)
-        basic.showIcon(IconNames.Tortoise)
+        basic.showIcon(IconNames.Angry)
         basic.showIcon(IconNames.StickFigure)
         basic.pause(1000)
         pins.digitalWritePin(DigitalPin.P0, 0)
