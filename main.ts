@@ -90,7 +90,6 @@ let CRAMODE = false
 let LIGHTSTATE = 0
 let CONNECTED = false
 let Mode = ""
-basic.showString("EVOTEST")
 Mode = "OFF"
 music.setBuiltInSpeakerEnabled(true)
 pins.setAudioPinEnabled(false)
@@ -99,9 +98,19 @@ CONNECTED = false
 LIGHTSTATE = 0
 CRAMODE = false
 radio.setGroup(RADIOGROUP)
+basic.showLeds(`
+    # . . . .
+    # . # . .
+    # . # # .
+    # . . . .
+    # # # # .
+    `)
+basic.pause(500)
+basic.clearScreen()
 basic.forever(function () {
     light_level = Math.map(input.lightLevel(), 0, 255, 1023, 0)
     if (CRAMODE == false) {
+        music.stopAllSounds()
         if (Mode == "OFF") {
         	
         } else if (Mode == "LIGHT") {
@@ -119,5 +128,16 @@ basic.forever(function () {
                 basic.pause(1000)
             }
         }
+    }
+    if (CRAMODE == true) {
+        pins.digitalWritePin(DigitalPin.P0, 1)
+        basic.showIcon(IconNames.Heart)
+        basic.showIcon(IconNames.Angry)
+        basic.showIcon(IconNames.StickFigure)
+        basic.pause(1000)
+        pins.digitalWritePin(DigitalPin.P0, 0)
+        basic.showIcon(IconNames.Skull)
+        basic.showIcon(IconNames.Umbrella)
+        basic.showIcon(IconNames.Silly)
     }
 })
