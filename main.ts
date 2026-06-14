@@ -14,6 +14,10 @@ radio.onReceivedString(function (receivedString) {
         radio.sendString("CONNECTED")
         CONNECTED = true
     }
+    if (receivedString == "ALTCONNECT") {
+        radio.sendString("CONNECTED")
+        CONNECTED = true
+    }
     if (CONNECTED == true) {
         if (receivedString == "LAMPOFF") {
             LIGHTSTATE = 0
@@ -24,11 +28,35 @@ radio.onReceivedString(function (receivedString) {
         } else if (receivedString == "CRAON") {
             LIGHTSTATE = 2
             CRAMODE = true
-            cramode()
         } else if (receivedString == "CRAOFF") {
             CRAMODE = false
             LIGHTSTATE = 0
             pins.digitalWritePin(DigitalPin.P0, 0)
+        }
+        if (CRAMODE == false) {
+            if (receivedString == "ALTLEDCHANGE") {
+                if (LIGHTSTATE == 0) {
+                    LIGHTSTATE = 1
+                    pins.digitalWritePin(DigitalPin.P0, 1)
+                } else if (LIGHTSTATE == 1) {
+                    LIGHTSTATE = 0
+                    pins.digitalWritePin(DigitalPin.P0, 0)
+                }
+            } else if (receivedString == "ALTREDCHANGE") {
+                if (REDSTATUS == 0) {
+                    REDSTATUS = 1
+                    basic.showLeds(`
+                        # # # # #
+                        # # # # #
+                        # # # # #
+                        # # # # #
+                        # # # # #
+                        `)
+                } else if (LIGHTSTATE == 1) {
+                    basic.clearScreen()
+                    REDSTATUS = 0
+                }
+            }
         }
     }
 })
@@ -68,24 +96,8 @@ input.onButtonPressed(Button.B, function () {
         }
     }
 })
-function cramode () {
-    music._playDefaultBackground(music.builtInPlayableMelody(Melodies.Wawawawaa), music.PlaybackMode.LoopingInBackground)
-    while (CRAMODE == true) {
-        if (CRAMODE == true) {
-            pins.digitalWritePin(DigitalPin.P0, 1)
-            basic.showIcon(IconNames.Heart)
-            basic.showIcon(IconNames.Angry)
-            basic.showIcon(IconNames.StickFigure)
-            basic.pause(1000)
-            pins.digitalWritePin(DigitalPin.P0, 0)
-            basic.showIcon(IconNames.Skull)
-            basic.showIcon(IconNames.Umbrella)
-            basic.showIcon(IconNames.Silly)
-        }
-    }
-    music.stopAllSounds()
-}
 let light_level = 0
+let REDSTATUS = 0
 let CRAMODE = false
 let LIGHTSTATE = 0
 let CONNECTED = false
@@ -130,6 +142,7 @@ basic.forever(function () {
         }
     }
     if (CRAMODE == true) {
+        music._playDefaultBackground(music.builtInPlayableMelody(Melodies.Wawawawaa), music.PlaybackMode.LoopingInBackground)
         pins.digitalWritePin(DigitalPin.P0, 1)
         basic.showIcon(IconNames.Heart)
         basic.showIcon(IconNames.Angry)
